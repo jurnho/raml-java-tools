@@ -203,7 +203,8 @@ public class GenerationContextImpl implements GenerationContext {
         Set<UnionTypeHandlerPlugin> plugins = new HashSet<>();
         loadBasePlugins(plugins, UnionTypeHandlerPlugin.class);
         for (PluginDef datum : data) {
-            plugins.addAll(pluginManager.getClassesForName(datum.getPluginName(), datum.getArguments() , UnionTypeHandlerPlugin.class));
+            final Set<UnionTypeHandlerPlugin> classesForName = pluginManager.getClassesForName(datum.getPluginName(), datum.getArguments(), UnionTypeHandlerPlugin.class);
+            plugins.addAll(classesForName);
         }
         return new UnionTypeHandlerPlugin.Composite(plugins);
     }
