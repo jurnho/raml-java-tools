@@ -42,6 +42,9 @@ public class RenameImplementationPlugin extends AllTypesPluginHelper {
         if ( type == EventType.INTERFACE) {
             return currentSuggestion;
         } else {
+            if (arguments.isEmpty()) {
+                return currentSuggestion;
+            }
             return ClassName.get(currentSuggestion.packageName(),  arguments.get(0));
         }
     }
