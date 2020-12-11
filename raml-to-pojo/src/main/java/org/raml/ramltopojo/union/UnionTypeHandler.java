@@ -36,10 +36,12 @@ public class UnionTypeHandler implements TypeHandler {
         UnionTypeHandlerPlugin plugin = generationContext.pluginsForUnions(Utils.allParents(union, new ArrayList<TypeDeclaration>()).toArray(new TypeDeclaration[0]));
         ClassName className;
         if ( type == EventType.IMPLEMENTATION ) {
-            className = generationContext.buildDefaultClassName(Names.typeName(name, "Impl"), EventType.IMPLEMENTATION);
+            final String impl = Names.typeName(name, "Impl");
+            className = generationContext.buildDefaultClassName(impl, EventType.IMPLEMENTATION);
         } else {
 
-            className = generationContext.buildDefaultClassName(Names.typeName(name), EventType.INTERFACE);
+            final String name = Names.typeName(this.name);
+            className = generationContext.buildDefaultClassName(name, EventType.INTERFACE);
         }
 
         return plugin.className(context, union, className, type);
