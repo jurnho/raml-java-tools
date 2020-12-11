@@ -21,6 +21,7 @@ import org.raml.v2.api.model.v10.datamodel.*;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -185,7 +186,7 @@ public enum TypeDeclarationType implements TypeHandlerFactory, TypeAnalyserFacto
         @Override
         public TypeHandler createHandler(String name, TypeDeclarationType type, TypeDeclaration typeDeclaration) {
 
-            return new ReferenceTypeHandler(typeDeclaration, Date.class, ClassName.get(Date.class));
+            return new ReferenceTypeHandler(typeDeclaration, LocalDate.class, ClassName.get(LocalDate.class));
         }
 
         @Override
