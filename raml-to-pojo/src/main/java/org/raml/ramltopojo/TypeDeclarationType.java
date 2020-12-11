@@ -21,6 +21,7 @@ import org.raml.v2.api.model.v10.datamodel.*;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -217,7 +218,7 @@ public enum TypeDeclarationType implements TypeHandlerFactory, TypeAnalyserFacto
     DATETIME_ONLY {
         @Override
         public TypeHandler createHandler(String name, TypeDeclarationType type, TypeDeclaration typeDeclaration) {
-            return new ReferenceTypeHandler(typeDeclaration, Date.class, ClassName.get(Date.class));
+            return new ReferenceTypeHandler(typeDeclaration, LocalDateTime.class, ClassName.get(LocalDateTime.class));
         }
 
         @Override
@@ -401,7 +402,8 @@ public enum TypeDeclarationType implements TypeHandlerFactory, TypeAnalyserFacto
 
     public static TypeName calculateTypeName(String name, TypeDeclaration typeDeclaration, GenerationContext context, EventType eventType) {
 
-        TypeDeclarationType typeDeclarationType = ramlToType.get(Utils.declarationType(typeDeclaration));
+        final Class<?> key = Utils.declarationType(typeDeclaration);
+        TypeDeclarationType typeDeclarationType = ramlToType.get(key);
 
         TypeHandler handler = typeDeclarationType.createHandler(name, typeDeclarationType, typeDeclaration);
         TypeName typeName = handler.javaClassReference(context, eventType);
