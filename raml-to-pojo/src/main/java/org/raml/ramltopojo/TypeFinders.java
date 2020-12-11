@@ -46,8 +46,10 @@ public class TypeFinders {
             @Override
             public Iterable<TypeDeclaration> findTypes(Api api) {
 
-                return FluentIterable.from(api.types())
-                        .append(resourceTypes(api.resources()))
+                final List<TypeDeclaration> types = api.types();
+                final List<Resource> resources = api.resources();
+                return FluentIterable.from(types)
+                        .append(resourceTypes(resources))
                         .append(Utils.goThroughLibraries(new ArrayList<TypeDeclaration>(), new HashSet<String>(), api.uses()));
             }
         };
