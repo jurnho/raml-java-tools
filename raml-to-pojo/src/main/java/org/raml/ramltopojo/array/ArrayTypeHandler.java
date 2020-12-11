@@ -9,6 +9,7 @@ import org.raml.ramltopojo.*;
 import org.raml.ramltopojo.extensions.ArrayPluginContext;
 import org.raml.ramltopojo.extensions.ArrayPluginContextImpl;
 import org.raml.ramltopojo.extensions.ReferencePluginContext;
+import org.raml.ramltopojo.extensions.ReferenceTypeHandlerPlugin;
 import org.raml.v2.api.model.v10.datamodel.ArrayTypeDeclaration;
 import org.raml.v2.api.model.v10.datamodel.TypeDeclaration;
 
@@ -36,16 +37,16 @@ public class ArrayTypeHandler implements TypeHandler {
         return generationContext.pluginsForArrays(
                 Utils.allParents(typeDeclaration, new ArrayList<TypeDeclaration>())
                         .toArray(new TypeDeclaration[0]))
-                        .className(
-                                arrayPluginContext,
-                                typeDeclaration,
-                                generationContext.buildDefaultClassName(Names.typeName(name), EventType.INTERFACE), EventType.INTERFACE);
+                .className(
+                        arrayPluginContext,
+                        typeDeclaration,
+                        generationContext.buildDefaultClassName(Names.typeName(name), EventType.INTERFACE), EventType.INTERFACE);
     }
 
     @Override
     public TypeName javaClassReference(GenerationContext generationContext, EventType type) {
 
-        if ( name.contains("[") || name.equals("array")) {
+        if (name.contains("[") || name.equals("array")) {
             String itemTypeName = typeDeclaration.items().name();
             if ("object".equals(itemTypeName)) {
                 itemTypeName = typeDeclaration.items().type();
@@ -56,11 +57,18 @@ public class ArrayTypeHandler implements TypeHandler {
                 throw new GenerationException("unable to create type array item of type object (or maybe an inline array type ?)");
             }
 
-            return generationContext.pluginsForReferences(
-                    Utils.allParents(typeDeclaration, new ArrayList<TypeDeclaration>()).toArray(new TypeDeclaration[0]))
+            final TypeDeclaration items = typeDeclaration.items();
+            final TypeName typeName = TypeDeclarationType.calculateTypeName(itemTypeName, items, generationContext, type);
+            final TypeDeclaration[] typeDeclarations = Utils.allParents(typeDeclaration, new ArrayList<>()).toArray(new TypeDeclaration[0]);
+            final ReferenceTypeHandlerPlugin referenceTypeHandlerPlugin = generationContext.pluginsForReferences(
+                    typeDeclarations);
+            final TypeName typeName1 = referenceTypeHandlerPlugin
                     .typeName(new ReferencePluginContext() {
-                    }, typeDeclaration, ParameterizedTypeName.get(ClassName.get(List.class), TypeDeclarationType.calculateTypeName(itemTypeName, typeDeclaration.items(), generationContext, type).box()));
+                              }, typeDeclaration,
+                            ParameterizedTypeName.get(ClassName.get(List.class), typeName.box()));
+            return typeName1;
         } else {
+
 
             // so we are an array declared in the types: section.
             return javaClassName(generationContext, type);
@@ -76,13 +84,13 @@ public class ArrayTypeHandler implements TypeHandler {
         TypeDeclaration items = typeDeclaration.items();
 
         TypeName itemsTypeName = ClassName.get(Object.class);
-        if ( TypeDeclarationType.isNewInlineType(items) ){
-            Optional<CreationResult> cr = TypeDeclarationType.createInlineType(className, preCreationResult.getJavaName(EventType.IMPLEMENTATION),  Names.typeName(items.type(), "type"), items, generationContext);
-            if ( cr.isPresent() ) {
+        if (TypeDeclarationType.isNewInlineType(items)) {
+            Optional<CreationResult> cr = TypeDeclarationType.createInlineType(className, preCreationResult.getJavaName(EventType.IMPLEMENTATION), Names.typeName(items.type(), "type"), items, generationContext);
+            if (cr.isPresent()) {
                 preCreationResult.withInternalType(items.name(), cr.get());
                 itemsTypeName = cr.get().getJavaName(EventType.INTERFACE);
             }
-        }  else {
+        } else {
 
             itemsTypeName = findType(items.name(), items, generationContext).box();
         }
