@@ -52,7 +52,8 @@ public class RamlToPojoBuilder {
 
     public RamlToPojo build(List<String> basePlugins) {
 
-        return new RamlToPojoImpl(typeFinder, new GenerationContextImpl(PluginManager.createPluginManager(), api, typeFetcher, packageName, basePlugins));
+        final RamlToPojoImpl ramlToPojo = new RamlToPojoImpl(typeFinder, new GenerationContextImpl(PluginManager.createPluginManager(), api, typeFetcher, packageName, basePlugins));
+        return ramlToPojo;
     }
 
 
