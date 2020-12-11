@@ -41,7 +41,8 @@ public class ObjectTypeHandler implements TypeHandler {
 
         ObjectPluginContext context = new ObjectPluginContextImpl(generationContext, null);
 
-        ObjectTypeHandlerPlugin plugin = generationContext.pluginsForObjects(Utils.allParents(objectTypeDeclaration, new ArrayList<>()).toArray(new TypeDeclaration[0]));
+        final TypeDeclaration[] typeDeclarations = Utils.allParents(objectTypeDeclaration, new ArrayList<>()).toArray(new TypeDeclaration[0]);
+        ObjectTypeHandlerPlugin plugin = generationContext.pluginsForObjects(typeDeclarations);
         ClassName className;
         if ( type == EventType.IMPLEMENTATION ) {
             className = generationContext.buildDefaultClassName(Names.typeName(name, "Impl"), EventType.IMPLEMENTATION);
